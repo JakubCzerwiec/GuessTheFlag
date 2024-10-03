@@ -19,6 +19,14 @@ struct ContentView: View {
     @State private var gamesPlayed = 0
     
     @State private var endGame = false
+    // Custom modifier
+    struct FlagImage: ViewModifier {
+        func body(content: Content) -> some View {
+            content
+                .clipShape(.capsule)
+                .shadow(radius: 5)
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -50,8 +58,7 @@ struct ContentView: View {
                             flagTapped(number)
                         } label: {
                             Image(countries[number])
-                                .clipShape(.capsule)
-                                .shadow(radius: 5)
+                                .modifier(FlagImage())
                         }
                     }
                 }
