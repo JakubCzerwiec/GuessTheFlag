@@ -19,6 +19,11 @@ struct ContentView: View {
     @State private var gamesPlayed = 0
     
     @State private var endGame = false
+    
+    @State private var animationAmount = 0.0
+    @State private var tappedFlag = 5
+    @State private var blurDegree = 0.0
+    @State private var flagSize = 1.0
     // Custom modifier
     struct FlagImage: ViewModifier {
         func body(content: Content) -> some View {
@@ -55,12 +60,22 @@ struct ContentView: View {
                     
                     ForEach(0..<3) { number in
                         Button {
+                            tappedFlag = number
                             flagTapped(number)
+                            blurDegree = 3.0
+                            flagSize -= 0.2
+                            animationAmount += 360
                         } label: {
                             Image(countries[number])
                                 .modifier(FlagImage())
                         }
+                        .rotation3DEffect(.degrees(tappedFlag == number ? animationAmount : 0.0), axis: /*@START_MENU_TOKEN@*/(x: 0.0, y: 1.0, z: 0.0)/*@END_MENU_TOKEN@*/)
+                        .animation(.spring(duration: 1, bounce: 0.6), value: animationAmount)
+                        .blur(radius: (tappedFlag != number ? blurDegree : 0.0))
+                        .scaleEffect(tappedFlag != number ? flagSize : 1.0)
+                        .animation(.spring(duration: 1, bounce: 0.8), value: blurDegree)
                     }
+                    
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
@@ -105,7 +120,9 @@ struct ContentView: View {
     }
     
     func askQuestion () {
-        if gamesPlayed == 2 {
+        blurDegree = 0.0
+        flagSize = 1.0
+        if gamesPlayed == 8 {
             endGame = true
         }
         countries.shuffle()
